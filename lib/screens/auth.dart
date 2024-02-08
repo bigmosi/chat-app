@@ -23,6 +23,7 @@ class _AuthScreenState extends State<AuthScreen> {
   var _enteredEmail = '';
   var _enteredPassword = '';
   File? _selectedImage;
+  var _enteredUsername = '';
 
   var _isLoading = false;
 
@@ -58,7 +59,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
         // await _firebase.currentUser!.updatePhotoURL(url);
         await FirebaseFirestore.instance.collection('users').doc(userCredentials.user!.uid).set({
-          'username': 'username', // TODO: Add username field in the form and replace 'username' with 'usernameController.text
+          'username': _enteredUsername,
           'email': _enteredEmail,
           'image_url': url,
         });
@@ -123,6 +124,23 @@ class _AuthScreenState extends State<AuthScreen> {
                                 _enteredEmail = value!;
                               },
                             ),
+                            if (!_isLogin)
+                            TextFormField(
+                              decoration:
+                                  const InputDecoration(labelText: 'Username'),
+                                  enableSuggestions: false,
+                              textCapitalization: TextCapitalization.words,
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty || value.trim().length < 4){
+                                  return 'Please enter a valid username (at least 4 characters).';
+                                }
+
+                                return null;
+                              },
+                              onSaved: (value) {
+                                _enteredUsername = value!;
+                              },
+                            ),
                             TextFormField(
                               decoration:
                                   const InputDecoration(labelText: 'Password'),
@@ -139,7 +157,7 @@ class _AuthScreenState extends State<AuthScreen> {
                               },
                             ),
                             const SizedBox(height: 12),
-                            if (_isLoading)
+                            // if (_isLoading)
                             ElevatedButton(
                               onPressed: _submit,
                               style: ElevatedButton.styleFrom(
